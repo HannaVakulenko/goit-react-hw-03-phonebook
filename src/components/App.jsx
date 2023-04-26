@@ -7,11 +7,35 @@ import initialContacts from './contacts.json';
 import { ContactsList } from './ContactsList/ContactsList';
 import { Filter } from './Filter/Filter';
 
+// render > didMount > getItem > setState > update > render > didUpdate > setItem
+
 export class App extends Component {
   state = {
-    contacts: initialContacts,
+    // contacts: initialContacts,
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    const savedContacts = localStorage.getItem('contacts');
+    if (savedContacts !== null) {
+      //Якщо в LS вже є збережені дані, то пишемо це в state
+      this.setState({
+        contacts: JSON.parse(savedContacts),
+      });
+    } else {
+      //Якщо в LS ще нічого немає, то пишемо initialContacts в state
+      this.setState({
+        contacts: initialContacts,
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   addContact = newContact => {
     this.state.contacts.filter(
